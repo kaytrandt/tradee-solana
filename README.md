@@ -2,7 +2,7 @@
 
 Tradee is an iOS social investing app for people who want to discover tokenized equities, buy and sell with USDC, and follow their on-chain holdings in one mobile experience. This repository publishes the backend and Solana integration work for competition judges.
 
-> **The iOS client is closed-source.** This repo contains selected backend modules, Solana integration snippets, and docs for judges. The app's TestFlight invitation is [Tradee on TestFlight](https://testflight.apple.com/join/tmPFmzE7). External installation availability is not yet verified; see the [judge guide](docs/judge-guide.md).
+> **The iOS client is closed-source.** This repo contains selected backend modules, Solana integration snippets, and docs for judges. The app's TestFlight invitation is [Tradee on TestFlight](https://testflight.apple.com/join/tmPFmzE7) (TestFlight may be unavailable due to an ongoing Apple “Beta Contract Missing” issue). External installation availability is not yet verified; see the [judge guide](docs/judge-guide.md).
 
 **Network: Solana mainnet-beta.** The offline tests use synthetic transactions and mocked providers. This is not a devnet deployment. Tradee currently integrates existing Solana programs; there is **no Tradee-owned Anchor/Rust program, IDL, or program deployment** in this snapshot.
 
