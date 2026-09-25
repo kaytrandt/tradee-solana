@@ -1,3 +1,5 @@
+![Tradee — Invest tokenized stocks on Solana](assets/tradee-cover.png)
+
 # Tradee — tokenized stocks on Solana
 
 Tradee is an iOS social investing app for people who want to discover tokenized equities, buy and sell with USDC, and follow their on-chain holdings in one mobile experience. This repository publishes the backend and Solana integration work for competition judges.

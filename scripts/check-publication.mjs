@@ -9,6 +9,7 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const manifest = JSON.parse(await readFile(path.join(root, 'source-manifest.json'), 'utf8'));
 const added = [
   '.gitignore', 'README.md', 'package.json', 'source-manifest.json',
+  'assets/tradee-cover.png',
   'backend/package.json', 'backend/package-lock.json', 'backend/tsconfig.json',
   'backend/test-support/offline.mjs',
   'docs/architecture.md', 'docs/judge-guide.md', 'docs/publication-scope.md',
