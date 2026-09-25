@@ -1,0 +1,13 @@
+{
+  "name": "tradee-solana-submission",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": "24.x" },
+  "scripts": {
+    "typecheck": "npm --prefix backend run typecheck",
+    "test": "npm --prefix backend test",
+    "verify": "node scripts/check-publication.mjs && npm run typecheck && npm test",
+    "inspect:chain": "node scripts/inspect-chain.mjs"
+  }
+}

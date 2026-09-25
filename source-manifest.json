@@ -1,0 +1,385 @@
+{
+  "description": "Unmodified source snapshot from the local Tradee workspace, 2026-09-25. Paths are relative to this repository.",
+  "files": [
+    {
+      "path": "backend/migrations/006_trading_whitelist.sql",
+      "sha256": "a9f29bc919f51fcd3c28ac109b150881d61f805903fb3ceb2b9709ac63eda902"
+    },
+    {
+      "path": "backend/migrations/042_activate_canonical_trading_catalog.sql",
+      "sha256": "de9e44abb3252e7950faa54401a0c004f3f3ea7ca006c0ecea14acb00755528b"
+    },
+    {
+      "path": "backend/migrations/046_replace_trading_catalog_with_whitelist_v1.sql",
+      "sha256": "abbfc1b5958956dd8d567485bcd9436eafd345ae99bb014b3168dad3b5b61b86"
+    },
+    {
+      "path": "backend/migrations/083_inclusive_buy_minimum.sql",
+      "sha256": "742eb10d6695978ca5b7fdbb294e6f86019f0381fbe928797201b370cf0af5db"
+    },
+    {
+      "path": "backend/src/modules/accounting/application/accounting-event-normalizer.ts",
+      "sha256": "1d0eb3be0ce6bc71ea86512c03f0f06c21855232ee1baac7dc6e7eaf5e2b7725"
+    },
+    {
+      "path": "backend/src/modules/accounting/application/asset-quantity-converter.ts",
+      "sha256": "663ef440001c8387b43c8a437b8bf1fac46cffd6510fa9578e08d140cefb3e67"
+    },
+    {
+      "path": "backend/src/modules/accounting/application/position-engine.ts",
+      "sha256": "e2f53a8bfc5f25d1a891d678165a13c7de2a746060bc69f7c8b97a5a746c0c7c"
+    },
+    {
+      "path": "backend/src/modules/accounting/domain/accounting.ts",
+      "sha256": "f2895d5e7b5a6a2413058d03a07311286d598c964f3cf9bfb2c9026715022ed7"
+    },
+    {
+      "path": "backend/src/modules/accounting/domain/exact-amount.ts",
+      "sha256": "2a69ba3b6ac937eddf793709f4bc34ecf6d04cd50d4aad7692d2d5ecae1e93bc"
+    },
+    {
+      "path": "backend/src/modules/accounting/infrastructure/solana/solana-accounting-rpc-gateway.ts",
+      "sha256": "e9e371cc1682c737579c8e93b3df90e324de5421ff32a8312c53792520d39309"
+    },
+    {
+      "path": "backend/src/modules/assets/domain/asset-provider.ts",
+      "sha256": "c3a304e521df70731f7d0614b85edaf51a651903cad3d70083c4334e9b43fafd"
+    },
+    {
+      "path": "backend/src/modules/assets/domain/asset.ts",
+      "sha256": "fa4a5056eebe1468cf398b59424f63abb7e5d00fd569763980d4aa84699ba8cc"
+    },
+    {
+      "path": "backend/src/modules/assets/domain/quantity-multiplier.ts",
+      "sha256": "fdd878c897f67f9229ea08ad0678e885eaec105eacbdfcbc8d009fffa8982739"
+    },
+    {
+      "path": "backend/src/modules/assets/domain/stockmeme-catalog.ts",
+      "sha256": "618aaf2babc768e639b8c91e0dfcf75c5e64e942402df5c41c66c9c1eef7c978"
+    },
+    {
+      "path": "backend/src/modules/assets/domain/stockmeme.ts",
+      "sha256": "cf766fac7eec2728c887032abf479310f9f0af4eaf39a72f30134dc5999887a1"
+    },
+    {
+      "path": "backend/src/modules/assets/domain/sunrise-asset-catalog.ts",
+      "sha256": "f7ab6d8c8b1e519966ef6d08d2d30a96454a6cda3b07c4ef0ffd9dfee8cb7f4b"
+    },
+    {
+      "path": "backend/src/modules/assets/domain/xstocks-provider.ts",
+      "sha256": "b186310b0e3e8632d1c876fdf08c78c379024e5f93383140c2923859eaeb5ec8"
+    },
+    {
+      "path": "backend/src/modules/assets/infrastructure/solana/solana-rpc-mint-metadata-reader.ts",
+      "sha256": "2570c877cd4f1991cf9a9caac989b4b2685809507f9672663a2b1932e6a80217"
+    },
+    {
+      "path": "backend/src/modules/assets/infrastructure/sunrise/sunrise-http-provider.ts",
+      "sha256": "efe560e069c6547425e3c2d6af6b5247989aaa0b65c3d941464b4bda7646683d"
+    },
+    {
+      "path": "backend/src/modules/assets/infrastructure/xstocks/exact-json-decimal.ts",
+      "sha256": "5c6b333fca3de7569aaaa639aa33fa612f9008b4b1cc20a1e92828550be6b31b"
+    },
+    {
+      "path": "backend/src/modules/assets/infrastructure/xstocks/xstocks-dtos.ts",
+      "sha256": "2dfdd26879ccfb8347e11676732babe71a49816a43ffcfa41c472e076e977f39"
+    },
+    {
+      "path": "backend/src/modules/assets/infrastructure/xstocks/xstocks-http-provider.ts",
+      "sha256": "b1177a840e3602d202994dca67cdfb99df9ab7c2da9bddfad2bc4c3f674c43ff"
+    },
+    {
+      "path": "backend/src/modules/funding/application/privy-funds-deposited-service.ts",
+      "sha256": "ae2a91c5731d0cd4ccf0320c5ef39f477ff36c42b0059241fbf9833f2afe182f"
+    },
+    {
+      "path": "backend/src/modules/funding/domain/external-wallet-deposit.ts",
+      "sha256": "ee947c51b36b2a7a27c93a6290f9eb92722205089e7f62056cbbb53ba75e029d"
+    },
+    {
+      "path": "backend/src/modules/funding/domain/privy-funds-deposited.ts",
+      "sha256": "8313920e623344e802c087be55c486d57d51459ff345cc31be74ed51a7ea053a"
+    },
+    {
+      "path": "backend/src/modules/funding/infrastructure/lighthouse-deposit-guard.ts",
+      "sha256": "4e774f4a17f1f8439c17a7b4878a22287f55fabcc17bc4bdb2b0274269056e4f"
+    },
+    {
+      "path": "backend/src/modules/funding/infrastructure/solana-external-deposit-gateway.ts",
+      "sha256": "5832a079eab576ae79cad80f910345914aed4c11eaec8eea1a8b56f73fbbd9b6"
+    },
+    {
+      "path": "backend/src/modules/identity/domain/identity.ts",
+      "sha256": "1be96e421158ab3047de2c70c3647e4ec24db3f0d2e2bc651a45bd078ad62653"
+    },
+    {
+      "path": "backend/src/modules/provider-platform/domain/provider-contracts.ts",
+      "sha256": "19d1608cae4f0ae9a3e02332a24ddd4c463735b3c533eaa17c94fcf6c3bc9fa2"
+    },
+    {
+      "path": "backend/src/modules/provider-platform/infrastructure/exact-json.ts",
+      "sha256": "f83e54bffeb853b5c918663d8a6b1f0bb5155c535b052fedf741e22e1fff95b2"
+    },
+    {
+      "path": "backend/src/modules/provider-platform/infrastructure/jupiter/jupiter-native-fee-price.ts",
+      "sha256": "981f64f4f3c5d19e678dacf6d03f23b768b970c7847a2a82882353d13ae45ed2"
+    },
+    {
+      "path": "backend/src/modules/provider-platform/infrastructure/jupiter/jupiter-price-client.ts",
+      "sha256": "1f201a6461144445f3703eb2a7e0fbce087bc76d293dd77e10c1b16a2e50ed48"
+    },
+    {
+      "path": "backend/src/modules/provider-platform/infrastructure/postgres/postgres-jupiter-request-gate.ts",
+      "sha256": "6c63bdb85a81de5a1f3160b5b6ded8e04ff33cc62b6256bba77d27ecad1c1b9b"
+    },
+    {
+      "path": "backend/src/modules/provider-platform/infrastructure/shared-cache.ts",
+      "sha256": "ed4034d10fd16d09e0fb908e3e404cbaf9c2f2abab4fac2f119cca03afe56b8d"
+    },
+    {
+      "path": "backend/src/modules/trading/application/charged-trade-quote.ts",
+      "sha256": "3d7973b6fd1a921f3cfe0799e6466db8af5d78686abd74a1d9c0c6b3b113a16a"
+    },
+    {
+      "path": "backend/src/modules/trading/application/confirmed-trade-receipt-service.ts",
+      "sha256": "4f55cee295c2a428efeb0868a9f457363abd118cb969494b1b865d475653b2a0"
+    },
+    {
+      "path": "backend/src/modules/trading/application/fee-engine.ts",
+      "sha256": "1a35f67c081b12523cfb6a48e4b1c0a7002345bf3d26a7c97994c87c3a595be6"
+    },
+    {
+      "path": "backend/src/modules/trading/application/gas-sponsorship-policy.ts",
+      "sha256": "7c828e3e993e1732c26cbd1b92c9ad97df030f2c798c8732d7605ced825c1a37"
+    },
+    {
+      "path": "backend/src/modules/trading/application/recent-fee-validations.ts",
+      "sha256": "b89534a5cb1fbe67f3f6ac2a767ed78a4ec9701255acda39d342ab6c5f84e66d"
+    },
+    {
+      "path": "backend/src/modules/trading/application/solana-trade-transaction-validator.ts",
+      "sha256": "8b917d342e5c80fa33433bad1e06844b96fc836302708eadff1374737b1fb085"
+    },
+    {
+      "path": "backend/src/modules/trading/application/trade-risk-engine.ts",
+      "sha256": "e6a0e8d50a95eb2e39b8dd5bcdae346bf26f27a21f8521a88121741690ef8032"
+    },
+    {
+      "path": "backend/src/modules/trading/application/trading-service.ts",
+      "sha256": "10152f8d748b26165f5424e86c0809fb7be42e2f9893e3d35a4f30e0bf85606e"
+    },
+    {
+      "path": "backend/src/modules/trading/domain/base-units.ts",
+      "sha256": "35320e3618645c3a3921077addd2a3172363fbb466ad668c3a61bb1735dc7367"
+    },
+    {
+      "path": "backend/src/modules/trading/domain/buy-input-budget.ts",
+      "sha256": "2111a3ecc9df5eed9d9efd0707ae4386cc6b74f918048942bb1a9011553efd8d"
+    },
+    {
+      "path": "backend/src/modules/trading/domain/trading.ts",
+      "sha256": "34c889b5fc2949e57114b6c3e08f7d28a497c284e76b34fb3fc055b383c556c3"
+    },
+    {
+      "path": "backend/src/modules/trading/infrastructure/dflow/dflow-client.ts",
+      "sha256": "ea6b4df7a81a21ffe23a2d9695631f64930bbef161018d500612595deca6526a"
+    },
+    {
+      "path": "backend/src/modules/trading/infrastructure/dflow/dflow-configuration.ts",
+      "sha256": "cc053878893f176db281731e18e924fced89d1b6a79b2996c52e662989351bd7"
+    },
+    {
+      "path": "backend/src/modules/trading/infrastructure/dflow/dflow-swap-constraints.ts",
+      "sha256": "054cc5723c49cc4138fe1e2f10199f4a19d9189099c7322a75541e3c7aaddb31"
+    },
+    {
+      "path": "backend/src/modules/trading/infrastructure/dflow/dflow-trading-provider.ts",
+      "sha256": "9e09c3fab165894a32270fb71ef29be08fc892c936106253cd97e162b0e69891"
+    },
+    {
+      "path": "backend/src/modules/trading/infrastructure/postgres/postgres-gas-sponsorship-policy.ts",
+      "sha256": "58b9665475b9c0abfc6a5da366014f3431e50912b0fc16ce078511f271c55bdb"
+    },
+    {
+      "path": "backend/src/modules/trading/infrastructure/privy/privy-solana-transaction-provider.ts",
+      "sha256": "ae43ea22c7e84c91164d7c63d0c57acbadfed236ba7b83794e76b79a7773d951"
+    },
+    {
+      "path": "backend/src/modules/trading/infrastructure/privy/privy-transaction-webhook-verifier.ts",
+      "sha256": "1627e6bb2581fee2381d0c66bb4e2d98daddac913f7b6642e4142c2952ca9d00"
+    },
+    {
+      "path": "backend/src/modules/trading/infrastructure/solana/fee-transaction-composer.ts",
+      "sha256": "7f6c01c459665fdc0b620153ee259e0175b29a3a043b668738b6aa9a239e50b3"
+    },
+    {
+      "path": "backend/src/modules/trading/infrastructure/solana/solana-address-lookup-resolver.ts",
+      "sha256": "55ce8ad19cbc066674615e3b02d46284b5231e5601e5bf0790ced6b3ba76cee0"
+    },
+    {
+      "path": "backend/src/modules/trading/infrastructure/solana/solana-block-height.ts",
+      "sha256": "6be3ae88fd16f0e6cf98a6c9e193d5e520e592c0dc1d8656201dc7b19c4e88f8"
+    },
+    {
+      "path": "backend/src/modules/trading/infrastructure/solana/solana-rpc-execution-gateway.ts",
+      "sha256": "42670769ca2cf3f460954839a9cd66b562eaee4fbbfe2a9c79ea72291b00fcb4"
+    },
+    {
+      "path": "backend/src/modules/trading/infrastructure/solana/trade-economics-verifier.ts",
+      "sha256": "fe95a292e96efedd209ad036c3a57349874446be3af5efca72998d40f738d70c"
+    },
+    {
+      "path": "backend/src/modules/transaction-policy/application/trading-policy-service.ts",
+      "sha256": "5972a285a66da331e42d8b5f50b406b87bba68f81a716eb36ed3fea895a87cf1"
+    },
+    {
+      "path": "backend/src/modules/transaction-policy/domain/exact-decimal.ts",
+      "sha256": "c8df634d04b6fa0015327f91f6a5b6a09d7cdcd76792e9be08c82d6b90050637"
+    },
+    {
+      "path": "backend/src/modules/transaction-policy/domain/fee-promotions.ts",
+      "sha256": "a29e721554af801bc6a5f3f959421a32fa1f6f2d9ae1404cded6d848d6ea3e10"
+    },
+    {
+      "path": "backend/src/modules/transaction-policy/domain/fee-quote-timing.ts",
+      "sha256": "f8d3cc995b6fb4ef96aebf4fc2ae32b9ebb84aadf4a794cd90fa7285debcd92f"
+    },
+    {
+      "path": "backend/src/modules/transaction-policy/domain/network-fee-hints.ts",
+      "sha256": "d485337dd4bd549e9ae5ed63893ad92dff40f69d30f1eeeda06c875e5e958d8e"
+    },
+    {
+      "path": "backend/src/modules/transaction-policy/domain/trading-policy.ts",
+      "sha256": "ea865afb2c3d54df342ee507e6838d919b83c1def969cf0350ebd21999952e60"
+    },
+    {
+      "path": "backend/src/modules/transaction-policy/domain/transaction-fees.ts",
+      "sha256": "307cd8c50102ddad965e7cc7036e2b9e9d0c7083c43d873f62cd998e8671f45a"
+    },
+    {
+      "path": "backend/src/modules/transaction-policy/infrastructure/postgres/postgres-trading-whitelist-repository.ts",
+      "sha256": "ca90e7fe4b4c3eb716b33851968c826bad02d9b929667f10e2827628ade4d042"
+    },
+    {
+      "path": "backend/src/modules/transaction-policy/infrastructure/postgres-fee-promotions.ts",
+      "sha256": "a0ef596b01dc525141fa4852a70fb8ee1b0df65b0ccff222bc2b8d632332ac76"
+    },
+    {
+      "path": "backend/src/modules/wallet/fee-payer/co-sign-transaction-provider.ts",
+      "sha256": "4dae8f72e11b664fc2eebba0c08334f845f97214c02250ef5298e4770cab514d"
+    },
+    {
+      "path": "backend/src/modules/wallet/fee-payer/fee-payer-composition.ts",
+      "sha256": "cb7bda238bd49d6693da5e794d047c49684c02b9e9bfa3555386c054432e9186"
+    },
+    {
+      "path": "backend/src/modules/wallet/fee-payer/fee-payer-domain.ts",
+      "sha256": "4c472fe91d9b56f375a0ce78d15682abc32e04781e60e0f49e08ebfb795a5a8a"
+    },
+    {
+      "path": "backend/src/modules/wallet/fee-payer/fee-payer-signer.ts",
+      "sha256": "a7254ade006d268014f43023b2eae5244a55af5c9cf60ab02645e0ca82b4c402"
+    },
+    {
+      "path": "backend/src/modules/wallet/fee-payer/fee-price-composition.ts",
+      "sha256": "45e253ae9c48fa8ae8b833d9d16415c38e566c0e48510e34d94923b373f40060"
+    },
+    {
+      "path": "backend/src/modules/wallet/fee-payer/fee-usd-valuation.ts",
+      "sha256": "f2d9dadad84509d385edd2979f081857fd8e4aadfb16733665d11e6e1e11152d"
+    },
+    {
+      "path": "backend/src/modules/wallet/fee-payer/postgres-fee-payer-journal.ts",
+      "sha256": "c9378f87409891ec19f31ef19abdf15e439e6c80bc4c7bbd09a18263a754eb61"
+    },
+    {
+      "path": "backend/src/modules/wallet/fee-payer/privy-user-transaction-signer.ts",
+      "sha256": "a810bb03f3af6121e6d6ace2ee9d984071d3b4dbbe222f964adaedce9c8a4462"
+    },
+    {
+      "path": "backend/src/modules/wallet/fee-payer/solana-fee-payer-chain.ts",
+      "sha256": "b639a7bb71fa50589883e274be770f4b14da2293867dc9a3ef13dd90ec768a81"
+    },
+    {
+      "path": "backend/src/modules/wallet/fee-payer/sponsor-instruction-policy.ts",
+      "sha256": "0c1fa8f8305179b24d95f9c1d1c0c77677bc211c68760f090f79c495f86db9b2"
+    },
+    {
+      "path": "backend/src/modules/withdraw/application/charged-withdrawal-builder.ts",
+      "sha256": "cb8ed851f1aa82a4cd40cf0fa0292a294ed0605ba45829a888999f9b3eea8554"
+    },
+    {
+      "path": "backend/src/modules/withdraw/domain/withdraw.ts",
+      "sha256": "ab3a0219248148103c1658b8122d4f6205b76a8b55aaa66fd4d682920e01fbae"
+    },
+    {
+      "path": "backend/src/modules/withdraw/infrastructure/solana/solana-withdrawal-transaction.ts",
+      "sha256": "26d91b75eb44dc9d0cf020a1e37420bd3d1c9a9dc3efca16a2eb6e32372651f3"
+    },
+    {
+      "path": "backend/test/accounting-normalizer.test.ts",
+      "sha256": "629c43aa94e769a53e5aebba2ee43b030a6bd20d1d9d4ccb9ecc25aef7dcb18b"
+    },
+    {
+      "path": "backend/test/charged-transaction-fees.test.ts",
+      "sha256": "7d7013e7a0d402665f2d02eedd07d312ba31e5bea354d7bc42cc4ee3d75803d2"
+    },
+    {
+      "path": "backend/test/dflow-trading-provider.test.ts",
+      "sha256": "8dca2b7d6e6c52d52a4f4521980641760e357eb753615d8c72ef985df39dee65"
+    },
+    {
+      "path": "backend/test/fee-payer.test.ts",
+      "sha256": "8ebaed937c6c402265a24b8771f07d47c83f971e884d51676ecbb21f19b05f6b"
+    },
+    {
+      "path": "backend/test/gas-sponsorship-policy.test.ts",
+      "sha256": "7ac8c71e03b2a4b0236306c02d68f64e9995c4a8c7f12724d2fee47f9287ba6a"
+    },
+    {
+      "path": "backend/test/privy-funds-deposited-service.test.ts",
+      "sha256": "82199c35ba799fcd26d822f493d9a732787c49423c87f1ada4be20321b67b4db"
+    },
+    {
+      "path": "backend/test/privy-solana-transaction-provider.test.ts",
+      "sha256": "4722ca1bffb2f53a6b70dd64a36d338bd051e611dd81979a91072260452ef4ea"
+    },
+    {
+      "path": "backend/test/solana-rpc-execution-gateway.test.ts",
+      "sha256": "d0bc89aef479b81a0936ff4b333b276cfd9dd3a5f50590569d33ca5ea96b1bc3"
+    },
+    {
+      "path": "backend/test/solana-trade-transaction-validator.test.ts",
+      "sha256": "0a793fea670c13d905b6fae7d34c95979a5c9981fdda8abd503547a41de4bb98"
+    },
+    {
+      "path": "backend/test/trade-economics-security.test.ts",
+      "sha256": "1d94b893367a658a6f094257b8f43c0961b35229dbf0c34c9dd005ff3fd9ebf2"
+    },
+    {
+      "path": "backend/test/trading-fee-engine.test.ts",
+      "sha256": "af6c2a0995d460932f53371b3e2d76e19eb9bb127e3f87ad3dabb1128b7b54bf"
+    },
+    {
+      "path": "backend/test/trading-policy-service.test.ts",
+      "sha256": "56310ad073625667f6ea13b2abe16340649b88d4af00ce90ffce80a3ef2518e0"
+    },
+    {
+      "path": "backend/test/trading-service.test.ts",
+      "sha256": "72fa133e23e3cf78d109d9468abcf5248a05ba7d1a02489498e9bdacf87be699"
+    },
+    {
+      "path": "backend/test/trading-state-machine.test.ts",
+      "sha256": "18c9a1629b9afe0850a94666961ec1e5517a2d809ef224f9ee286f9d7fd2c1c0"
+    },
+    {
+      "path": "backend/test/transaction-fees.test.ts",
+      "sha256": "2d9e048f7e8aa520f87039dddcb70a423fa79ddae876e1bf8ae47b8c9cda9d89"
+    },
+    {
+      "path": "backend/test/xstocks-http-provider.test.ts",
+      "sha256": "77ecc024644932047cdc85af914905ee3656724000bab561858b7620951ef53e"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "network": "mainnet-beta",
+  "genesisHash": "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d",
+  "tradeeProgram": null,
+  "programs": {
+    "DFlow router": "DF1ow4tspfHX9JwWJsAb9epbkA8hmpSEAtxXy1V27QBH",
+    "SPL Token": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+    "Token-2022": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+    "Associated Token Account": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL",
+    "Compute Budget": "ComputeBudget111111111111111111111111111111",
+    "System": "11111111111111111111111111111111",
+    "Lighthouse deposit assertions": "L2TExMFKdjpN9kozasaurPirfHy9P8sbXoAN1qA3S95"
+  },
+  "settlementMint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+  "settlementDecimals": 6,
+  "exampleSunriseMints": {
+    "NKE": "NKEda5nHhNGgjrE9nDdMvaEmkmJ96qqxzBVZEcKmjSg",
+    "HOOD": "HooDYv5RewLRiMLnEVq3VJqdqxhuE6c5eYvqejMC3e9A"
+  },
+  "dflowIdlAccountReferencedByValidator": "Cp2dCjxCWdktak2JiSrh87X6sz31EnDVKoTGtsHJvhYq"
+}
