@@ -40,6 +40,20 @@ const now = new Date("2026-09-01T00:00:00.000Z");
 const walletAddress = "11111111111111111111111111111111";
 const usdc = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
 const asset = sampleAsset();
+
+test("SSE snapshot reads enforce owner and wallet without provider calls or execution", async () => {
+  const f = serviceFixture();
+  const created = await f.service.createOrder(createRequest());
+  const providerCalls = f.provider.calls.length;
+  f.solana.getTransactionStatus = async () => { throw Error("snapshot must not read RPC"); };
+  assert.equal((await f.service.readOrder(created.order.orderId, "user-1", walletAddress)).order.orderId, created.order.orderId);
+  await assert.rejects(f.service.readOrder(created.order.orderId, "other", walletAddress), { code: "TRADE_NOT_FOUND" });
+  await assert.rejects(f.service.readOrder(created.order.orderId, "user-1", "other"), { code: "TRADE_NOT_FOUND" });
+  await assert.rejects(f.service.readOrder("missing", "user-1", walletAddress), { code: "TRADE_NOT_FOUND" });
+  assert.equal(f.provider.calls.length, providerCalls);
+  assert.equal(f.privy.submissions, 0);
+});
+
 test('NVDA xStocks DISPLAY Max converts full precision shares into exact raw tokens',async()=>{
   const f=serviceFixture();
   f.policy.asset={...asset,provider:'xstocks',decimals:8,multiplier:decimalString('1.0009180758490996')};
@@ -724,24 +738,6 @@ function serializedTransaction(signatures: readonly Buffer[]): string {
 function required<T>(value: T | undefined): T {
   if (value === undefined) throw new Error("Missing test value");
   return value;
-}
-
-for (const side of [TradingSide.BUY, TradingSide.SELL]) {
-  test(`Stockmemes ${side} uses 10% DFlow slippage with identical fee terms and policy checks`, async () => {
-    const stock = serviceFixture(), meme = serviceFixture();
-    meme.policy.asset = { ...meme.policy.asset, assetClass: "stockmemes" };
-    const amount = side === TradingSide.BUY ? "100" : "1";
-    const normal = await stock.service.createOrder(createRequest({side,amount}));
-    const result = await meme.service.createOrder(createRequest({side,amount,slippageBps:50}));
-    assert.equal(result.quote?.slippageBps,1000);
-    assert.equal(normal.quote?.slippageBps,50);
-    assert.equal(result.quote?.tradeeFeeBps,normal.quote?.tradeeFeeBps);
-    assert.equal(result.quote?.tradeeFee,normal.quote?.tradeeFee);
-    assert.equal(result.quote?.grossInputAmount,normal.quote?.grossInputAmount);
-    assert.equal(meme.policy.calls.length,1);
-    assert.equal(meme.privy.submissions,0);
-    assert.ok(meme.provider.calls.every(call=>call.slippageBps===1000));
-  });
 }
 
 for (const state of ['confirmed', 'failed'] as const) {

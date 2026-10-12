@@ -32,7 +32,7 @@ Runtime trading authorization additionally depends on the backend's configured p
 | Compute budget | `SetComputeUnitLimit` (`2`) and `SetComputeUnitPrice` (`3`) where allowed; duplicate/malformed wallet-added instructions rejected | [Deposit validator](../backend/src/modules/funding/infrastructure/solana-external-deposit-gateway.ts) |
 | Sponsor boundary | Only approved ATA creation or the pinned DFlow router may receive sponsor authority through these paths | [Sponsor instruction policy](../backend/src/modules/wallet/fee-payer/sponsor-instruction-policy.ts) |
 | Wallet-added assertions | Explicit Lighthouse account/token assertion payload validation; not constructed by Tradee | [Lighthouse guard](../backend/src/modules/funding/infrastructure/lighthouse-deposit-guard.ts) |
-| Balances and finality | RPC `getTokenAccountsByOwner`, `getSignaturesForAddress`, `getTransaction`, and `getBlock` | [Accounting RPC gateway](../backend/src/modules/accounting/infrastructure/solana/solana-accounting-rpc-gateway.ts) |
+| Balances and finality | RPC `getTokenAccountsByOwner` across SPL Token and Token-2022, plus `getSignaturesForAddress`, `getTransaction`, and `getBlock`; integer aggregation rejects partial snapshots | [Accounting RPC gateway](../backend/src/modules/accounting/infrastructure/solana/solana-accounting-rpc-gateway.ts) |
 | Mint extensions | RPC `getAccountInfo`, mint decimals and Token-2022 metadata | [Mint reader](../backend/src/modules/assets/infrastructure/solana/solana-rpc-mint-metadata-reader.ts) |
 
 The router parser's source comment references the third-party DFlow IDL account `Cp2dCjxCWdktak2JiSrh87X6sz31EnDVKoTGtsHJvhYq`, inspected during the original implementation. That is **DFlow's schema reference**, not a Tradee deployment or a vendored/verified IDL in this repository. The provider selects underlying liquidity instructions; this snapshot does not assert a universal list of all inner instructions for every possible route.
@@ -41,6 +41,6 @@ The router parser's source comment references the third-party DFlow IDL account 
 
 - Canonical Solana USDC mint: [`EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`](https://explorer.solana.com/address/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v), six decimals.
 - xStocks metadata is obtained through the [xStocks adapter](../backend/src/modules/assets/infrastructure/xstocks/xstocks-http-provider.ts), with mint identity/decimals read from Solana.
-- Sunrise examples from the [pinned catalog](../backend/src/modules/assets/domain/sunrise-asset-catalog.ts): NKE `NKEda5nHhNGgjrE9nDdMvaEmkmJ96qqxzBVZEcKmjSg`, HOOD `HooDYv5RewLRiMLnEVq3VJqdqxhuE6c5eYvqejMC3e9A`.
+- Sunrise examples from the [pinned catalog](../backend/src/modules/assets/domain/sunrise-asset-catalog.ts): NKE `NKEda5nHhNGgjrE9nDdMvaEmkmJ96qqxzBVZEcKmjSg`, HOOD `HooDYv5RewLRiMLnEVq3VJqdqxhuE6c5eYvqejMC3e9A`, and RACE `RACEyWiM2ztEZcJx2AHXU2eWjhxU57x3vXn92b39dLD`.
 
 These public addresses are examples of integrated identities, not proof of current whitelist status, market liquidity, or an instruction to transact. Backend policy is revalidated before execution.

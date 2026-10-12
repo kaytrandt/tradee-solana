@@ -1,5 +1,10 @@
-/** Explicitly approved Solana identities from the supplied stock lists (18 original + 23 added on 2026-09-14). API discovery never expands this allowlist. */
+/** Explicitly approved Solana identities, including five additions on 2026-10-11. Discovery never expands this allowlist. */
 export const SUNRISE_ASSET_CATALOG = [
+  {"ticker": "RACE", "name": "Ferrari", "solanaMint": "RACEyWiM2ztEZcJx2AHXU2eWjhxU57x3vXn92b39dLD"},
+  {"ticker": "DKNG", "name": "DraftKings", "solanaMint": "DKNGQFNGQmoBdXSRGKJ8tTu7uPDasw5JDcfMmWniNfow"},
+  {"ticker": "ARM", "name": "Arm Holdings", "solanaMint": "ARMbSB1MBRQrY6PNMao1HdQ431VafC6JRJCsGZ2Yv3iJ"},
+  {"ticker": "NOK", "name": "Nokia", "solanaMint": "N7Q5fYX7YRnDQksfdBKnoUb3awm92n7QNAD35X3Rq1X"},
+  {"ticker": "CBRS", "name": "Cerebras Systems", "solanaMint": "CBRSFBbQPpp77NpMcwbTN6fhBHmZM94oFLJvruytw4Fi"},
   {
     "ticker": "NKE",
     "name": "NIKE",

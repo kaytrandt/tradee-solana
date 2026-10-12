@@ -1,5 +1,4 @@
 import { RecentFeeValidations } from "./recent-fee-validations.js";
-import { STOCKMEME_SLIPPAGE_BPS } from "../../assets/domain/stockmeme-catalog.js";
 import { randomUUID } from "node:crypto";
 import {
   addBaseUnits,
@@ -94,8 +93,7 @@ export class TradingService {
     if (!reservation.created) { requireSameRequest(reservation.aggregate.order, request); return reservation.aggregate; }
 
     try {
-      const slippageBps = validated.asset.assetClass === "stockmemes"
-        ? STOCKMEME_SLIPPAGE_BPS : this.normalizeSlippage(request.slippageBps);
+      const slippageBps = this.normalizeSlippage(request.slippageBps);
       const isBuy = validated.side === TradingSide.BUY;
       const inputMint = isBuy ? this.configuration.usdcMint : validated.asset.solanaMint;
       const outputMint = isBuy ? validated.asset.solanaMint : this.configuration.usdcMint;
@@ -363,6 +361,12 @@ export class TradingService {
       throw invalidState("Position updates require a confirmed execution.");
     }
     return await this.confirmedReceipts?.positionUpdate?.(aggregate.execution.executionId, userId) ?? null;
+  }
+
+  /** Current durable state for SSE bootstrap/wakeups, with the same ownership
+   * boundary as reconciliation but without waiting for another provider read. */
+  async readOrder(orderId: string, userId: string, walletAddress: string): Promise<TradeAggregate> {
+    return this.requireOwnedOrder(orderId, userId, walletAddress);
   }
 
   async reconcileOrder(orderId: string, userId: string, walletAddress: string): Promise<TradeAggregate> {

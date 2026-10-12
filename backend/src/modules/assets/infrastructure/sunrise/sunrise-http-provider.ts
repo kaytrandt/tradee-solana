@@ -1,6 +1,7 @@
 import type { AssetProvider, AssetProviderAsset } from "../../domain/asset-provider.js";
 import { SUNRISE_ASSET_CATALOG } from "../../domain/sunrise-asset-catalog.js";
 import type { SolanaMintMetadataReader } from "../../domain/xstocks-provider.js";
+import { sunrisePublicCatalog } from "./sunrise-public-catalog.js";
 
 export interface SunriseHttpProviderOptions {
   readonly fetch?: typeof fetch;
@@ -25,6 +26,7 @@ export class SunriseHttpProvider implements AssetProvider {
     const tokens: Record<string, unknown>[] = [];
     const cursors = new Set<string>();
     let cursor: string | null = null;
+    let publicCatalog = false;
     const observedAt = this.now();
     do {
       const url = new URL(`${this.baseUrl}/v1/tokens`);
@@ -32,6 +34,17 @@ export class SunriseHttpProvider implements AssetProvider {
       if (cursor !== null) url.searchParams.set("cursor", cursor);
       const response = await this.request(url, { headers: { accept: "application/json" },
         redirect: "error", signal: AbortSignal.timeout(15_000) });
+      // The list API now requires a key. Sunrise publishes the same identities
+      // on its public token page; retain all allowlist and onchain checks below.
+      if ((response.status === 401 || response.status === 403) && tokens.length === 0 && cursor === null) {
+        const page = await this.request('https://sunrise.xyz/tokens', {
+          headers: { accept: 'text/html' }, redirect: 'error', signal: AbortSignal.timeout(15_000),
+        });
+        if (!page.ok) throw new Error(`Sunrise public catalog failed with HTTP ${page.status}`);
+        tokens.push(...sunrisePublicCatalog(await page.text()));
+        publicCatalog = true;
+        break;
+      }
       if (!response.ok) throw new Error(`Sunrise token list failed with HTTP ${response.status}`);
       const payload: unknown = await response.json();
       if (!object(payload) || payload.success !== true || !object(payload.data) ||
@@ -59,7 +72,7 @@ export class SunriseHttpProvider implements AssetProvider {
       const token = matches[0]!;
       if (token.address !== approved.solanaMint || token.symbol !== approved.ticker ||
           token.chain !== "solana" || token.assetClass !== "stock" || token.platform !== "svm" ||
-          token.tokenProgram !== "token-2022" ||
+          (!publicCatalog && token.tokenProgram !== "token-2022") ||
           // Some approved tokens have no company metadata yet. Mint + symbol remain mandatory;
           // when company metadata exists its ticker must agree with the approved identity.
           (token.stock != null && (!object(token.stock) || token.stock.ticker !== approved.ticker)) ||

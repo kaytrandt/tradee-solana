@@ -19,6 +19,14 @@ Tradee is an iOS social investing app for people who want to discover tokenized 
 
 The public integration includes **xStocks and Sunrise** asset adapters. Asset names alone never authorize trading: mint identity and backend policy are authoritative. A catalog entry does not guarantee a live route. Social UI and AI features are outside this export.
 
+## Current backend snapshot
+
+- Solana confirmation, fee-payer preflight, and accounting reads use bounded multi-RPC fallback. Read-only calls may hedge slow endpoints; transaction broadcast is never hedged.
+- Accounting honors RPC `Retry-After`, isolates paced background work from foreground confirmation, coalesces identical reads, and keeps a bounded finalized-block cache.
+- Wallet snapshots sum exact integer balances across both SPL Token and Token-2022 accounts and reject partial provider results.
+- Sunrise discovery keeps a pinned Solana mint allowlist and can parse the provider's public server-rendered token catalog when its list API requires authentication. Five current identities—RACE, DKNG, ARM, NOK, and CBRS—are included.
+- Confirmed receipt capture is concurrency-bounded and can resume pending durable work; order snapshots enforce the same user/wallet ownership boundary without triggering provider or execution calls.
+
 ## Why Solana
 
 The assets and settlement USDC are Solana tokens. Swaps, token-account creation, fee collection, and wallet ownership all depend on Solana transactions and token programs. Solana RPC supplies the balance and confirmation facts that the backend reconciles. Privy provides user wallet signing, while DFlow supplies executable swap routes. Solana is the settlement layer of the product.
@@ -35,6 +43,8 @@ npm run verify
 ```
 
 `verify` checks the publication allowlist and source hashes, type-checks TypeScript, and runs the backend tests with outbound network connections disabled. Tests use injected transports and, where needed, an in-process PGlite database. They cannot broadcast a real transaction.
+
+Publication validation on **2026-10-12**: TypeScript passed and **181 tests passed with zero failures**.
 
 For an optional **read-only mainnet inspection**, after reviewing the script:
 
@@ -66,4 +76,4 @@ This is a runnable **backend module/test snapshot**, not the complete production
 
 The implementation uses exact decimal strings and integer base units. Buy fees are deducted within the user's gross input budget; sell fees are deducted from proceeds. The snapshot contains both the legacy provider-fee path and the newer explicit service/network-fee path; the [architecture notes](docs/architecture.md#fees-and-wallet-ownership) explain that distinction. Tests are evidence of local behavior, not a claim of an independent security audit or a newly executed mainnet trade.
 
-Source snapshot: **2026-09-25**. Original exported files are listed with SHA-256 hashes in [source-manifest.json](source-manifest.json).
+Source snapshot: **2026-10-12**. Unmodified exported files are listed with SHA-256 hashes in [source-manifest.json](source-manifest.json); narrowly curated public-only files are separately allowlisted and checked.

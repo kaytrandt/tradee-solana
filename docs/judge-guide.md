@@ -18,11 +18,11 @@ Dependency installation needs the public npm registry. The tests themselves run 
 | Provider abstraction and DFlow request/response validation | `dflow-trading-provider.test.ts` |
 | Wrong mints/signers/programs/amounts and modified transaction rejection | `solana-trade-transaction-validator.test.ts`, `trade-economics-security.test.ts` |
 | User authorization, co-sign integrity, durable recovery | `privy-solana-transaction-provider.test.ts`, `fee-payer.test.ts` |
-| Policy rechecks, repeated submissions, order transitions and confirmation | `trading-service.test.ts`, `trading-state-machine.test.ts`, `solana-rpc-execution-gateway.test.ts` |
-| Finalized accounting and USDC-only deposit classification | `accounting-normalizer.test.ts`, `privy-funds-deposited-service.test.ts` |
-| Exact issuer metadata | `xstocks-http-provider.test.ts` |
+| Policy rechecks, owned order snapshots, repeated submissions, order transitions and confirmation | `trading-service.test.ts`, `trading-state-machine.test.ts`, `solana-rpc-execution-gateway.test.ts` |
+| Finalized accounting, RPC rate limits/cache/coalescing, and USDC-only deposit classification | `accounting-normalizer.test.ts`, `accounting-rpc-performance.test.ts`, `accounting-rpc-throttle.test.ts`, `privy-funds-deposited-service.test.ts` |
+| Exact issuer metadata and safe public-catalog parsing | `xstocks-http-provider.test.ts`, `sunrise-public-catalog.test.ts` |
 
-All filenames after the first row are also under `backend/test/`. The original source snapshot passed **169 tests, zero failures**, with TypeScript checking, during publication preparation on 2026-09-25.
+All filenames after the first row are also under `backend/test/`. On 2026-10-12, the snapshot passed TypeScript checking and **181 tests with zero failures**.
 
 ## 2. Inspect the real Solana dependencies
 
@@ -40,7 +40,7 @@ Only `getGenesisHash` and `getMultipleAccounts` are called. The command checks a
 
 Invitation: [Tradee on TestFlight](https://testflight.apple.com/join/tmPFmzE7).
 
-As of the 2026-09-25 source snapshot, the latest local release notes recorded an uploaded build awaiting external submission. The invitation is configured, but a fresh external install has not been verified. No public demo-video URL was present in this export. If access is unavailable, use the offline review path above and request a live walkthrough from the submitter through the competition channel.
+The invitation is configured, but a fresh external install has not been verified as part of this source update. No public demo-video URL is included in this export. If access is unavailable, use the offline review path above and request a live walkthrough from the submitter through the competition channel.
 
 When access works:
 

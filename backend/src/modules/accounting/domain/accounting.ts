@@ -276,6 +276,7 @@ export interface SolanaAccountingGateway {
   listTokenAccountAddresses(walletAddress: string, mint: string): Promise<readonly string[]>;
   listOwnedTokenAccountAddresses?(walletAddress: string): Promise<readonly string[]>;
   fetchFinalizedTransaction(signature: string, wallet: TrackedWallet): Promise<ChainObservationBatch>;
+  getWalletTokenBalances?(walletAddress: string): Promise<ReadonlyMap<string, string>>;
   getTokenBalance(walletAddress: string, mint: string): Promise<string>;
 }
 

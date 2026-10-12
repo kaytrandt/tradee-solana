@@ -59,11 +59,15 @@ export interface ConfirmedTradeReceiptRepository {
   // execution is not a confirmed trade owned by this user. No provider request
   // may be made for an unauthorized/unconfirmed execution.
   positionUpdate?(executionId: string, userId: string): Promise<ConfirmedPositionUpdate | null>;
+  listPending?(limit: number, afterExecutionId?: string): Promise<readonly { executionId: string; userId: string }[]>;
   pendingRequest(executionId: string, userId: string): Promise<ConfirmedReceiptRequest | null>;
   save(request: ConfirmedReceiptRequest, snapshot: ConfirmedReceiptSnapshot): Promise<void>;
 }
 
 export class ConfirmedTradeReceiptService {
+  private activeCaptures = 0;
+  private readonly captureWaiters: (() => void)[] = [];
+  private recoveryCursor: string | undefined;
   private readonly inFlight = new Map<string, Promise<void>>();
   constructor(private readonly repository: ConfirmedTradeReceiptRepository, private readonly source: ConfirmedTradeReceiptSource) {}
 
@@ -71,22 +75,47 @@ export class ConfirmedTradeReceiptService {
     const key = `${userId}:${executionId}`;
     const existing = this.inFlight.get(key);
     if (existing) return existing;
-    const work = this.capture(executionId, userId).finally(() => this.inFlight.delete(key));
+    const work = this.captureBounded(executionId, userId).finally(() => this.inFlight.delete(key));
     this.inFlight.set(key, work);
     return work;
   }
 
   async positionUpdate(executionId: string, userId: string): Promise<ConfirmedPositionUpdate | null> {
-    let value = await this.repository.positionUpdate?.(executionId, userId) ?? null;
+    const value = await this.repository.positionUpdate?.(executionId, userId) ?? null;
     if (value && value.missingReceiptExecutionIds.length > 0) {
       // Retry receipts missed by a previous process/request, including earlier
       // trades on this asset. Keep fan-out bounded and deduplicate in prepare().
-      await Promise.all(value.missingReceiptExecutionIds.slice(0, 8).map(async (id) => {
-        try { await this.prepare(id, userId); } catch { /* Preserve pending status. */ }
-      }));
-      value = await this.repository.positionUpdate?.(executionId, userId) ?? null;
+      // The read returns immediately. Missing quantities stay unavailable until
+      // every required receipt is verified; no partial/estimated balance escapes.
+      const ids = [executionId, ...value.missingReceiptExecutionIds.filter(id => id !== executionId)].slice(0, 8);
+      for (const id of ids) void this.prepare(id, userId).catch(() => {});
     }
     return value;
+  }
+
+  async recoverPending(limit = 32): Promise<void> {
+    if (!this.repository.listPending) return;
+    const requests = await this.repository.listPending(limit, this.recoveryCursor);
+    this.recoveryCursor = requests.length === limit ? requests.at(-1)?.executionId : undefined;
+    // Rotate over durable confirmed executions; a bad old receipt cannot starve
+    // later rows, and process restart needs no in-memory recovery state.
+    let next = 0;
+    await Promise.all(Array.from({ length: Math.min(2, requests.length) }, async () => {
+      while (next < requests.length) {
+        const request = requests[next++]!;
+        try { await this.prepare(request.executionId, request.userId); } catch { /* Next sweep retries. */ }
+      }
+    }));
+  }
+
+  private async captureBounded(executionId: string, userId: string): Promise<void> {
+    if (this.activeCaptures >= 4) await new Promise<void>(resolve => this.captureWaiters.push(resolve));
+    else this.activeCaptures++;
+    try { await this.capture(executionId,userId); }
+    finally {
+      const next = this.captureWaiters.shift();
+      if (next) next(); else this.activeCaptures--;
+    }
   }
 
   private async capture(executionId: string, userId: string): Promise<void> {

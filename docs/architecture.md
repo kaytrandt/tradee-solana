@@ -31,6 +31,8 @@ The diagram describes the shipping application's service boundaries. This reposi
 6. In the co-sign path, Privy signs for the user first. The adapter checks that the returned message is unchanged and the user signature is valid before the distinct fee payer co-signs. Durable signed bytes are journaled before broadcast. Ambiguous results reconcile without manufacturing a fresh transaction.
 7. A returned signature is not a confirmed trade. RPC confirmation advances execution; finalized token-balance observations feed accounting. Reconciliation is idempotent and on-chain ownership is authoritative.
 
+Confirmation and accounting tolerate individual RPC slowness or rate limits without weakening transaction semantics. Only idempotent reads may be hedged across endpoints. Broadcast remains a single explicit operation, and a semantic rejection such as transaction expiry cannot be hidden by a fallback provider.
+
 The closed-source HTTP host maps the flow to `POST /v1/trading/orders`, `POST /v1/trading/orders/:orderId/authorization`, `POST /v1/trading/orders/:orderId/submit`, and `GET /v1/trading/orders/:orderId`. These are documentation of the application contract, not endpoints started by this snapshot.
 
 ## Fees and wallet ownership
@@ -45,10 +47,12 @@ The closed-source HTTP host maps the flow to `POST /v1/trading/orders`, `POST /v
 
 The external-deposit builder creates a canonical USDC `TransferChecked` and an associated token account instruction when needed. Validation ties the signed transaction to the intended source, recipient, mint, and amount. Allowed wallet-added compute-budget/Lighthouse assertions are checked explicitly.
 
-`SolanaAccountingRpcGateway` reads finalized signatures, transactions, and token accounts, preserving quantities as integer strings. `AccountingEventNormalizer` and `PositionEngine` classify/replay those observations. A Privy funds-deposited webhook is a trigger for independent chain verification, not proof that a deposit exists. Only canonical Solana USDC is recognized as a cash deposit.
+`SolanaAccountingRpcGateway` reads finalized signatures, transactions, and token accounts, preserving quantities as integer strings. Current wallet snapshots query both SPL Token and Token-2022 and are accepted only when both reads succeed. Identical reads are coalesced, finalized block signatures use a bounded cache, and provider cooldowns honor `Retry-After` without exposing RPC URL credentials in telemetry. Background reads are paced separately so a newly confirmed trade does not wait behind enrichment work.
+
+`AccountingEventNormalizer` and `PositionEngine` classify/replay chain observations. Confirmed receipt capture is concurrency-bounded and can sweep pending durable requests after a process restart. A Privy funds-deposited webhook is a trigger for independent chain verification, not proof that a deposit exists. Only canonical Solana USDC is recognized as a cash deposit.
 
 ## Asset identity
 
-The xStocks adapter normalizes provider metadata and asks Solana for mint information. The Sunrise adapter uses a pinned mint catalog and on-chain Token-2022 scaled-UI metadata. Quantity multipliers and their changes are handled explicitly; display shares are not silently treated as raw token units. This export does not include a PreStocks adapter or claim PreStocks support.
+The xStocks adapter normalizes provider metadata and asks Solana for mint information. The Sunrise adapter uses a pinned mint catalog and on-chain Token-2022 scaled-UI metadata. If the Sunrise list API requires authentication, the adapter reads JSON embedded in Sunrise's public server-rendered token page; it never executes page scripts, and the same pinned mint, chain, symbol, decimals, and on-chain metadata checks still apply. Quantity multipliers and their changes are handled explicitly; display shares are not silently treated as raw token units. This export does not include a PreStocks adapter or claim PreStocks support.
 
 See [programs and instruction inventory](../onchain/README.md) and the [judge guide](judge-guide.md) for evidence paths.

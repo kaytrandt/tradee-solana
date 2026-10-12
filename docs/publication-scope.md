@@ -1,17 +1,17 @@
 # Publication scope
 
-This is a curated, independently buildable subset of the local Tradee workspace, prepared for public technical review on 2026-09-25.
+This is a curated, independently buildable subset of the local Tradee workspace, prepared for public technical review on 2026-10-12.
 
 ## Included
 
-- Trading/domain services, exact fee calculations, transaction policy, DFlow adapters, Solana transaction validation, and selected signing/sponsorship adapters.
+- Trading/domain services, exact fee calculations, transaction policy, DFlow adapters, Solana transaction validation, RPC resilience, and selected signing/sponsorship adapters.
 - Solana mint/balance reads, xStocks/Sunrise metadata adapters, external-deposit construction, finalized accounting and funding verification.
 - Their transitive TypeScript dependencies and selected original tests. PostgreSQL interfaces remain where required; tests use stubs or PGlite.
 - Four SQL files required by policy tests. These are historical test inputs, not an installation schema or authorization to activate assets.
 - One documented Swift authorization excerpt. The full iOS client remains closed-source.
 - Original-file hashes, judge documentation, publication checks, and an optional read-only chain inspection script.
 
-The files in [source-manifest.json](../source-manifest.json) are byte-for-byte copies of the local source. This manifest contains relative paths and SHA-256 digests, not local machine paths or credentials. The root tooling, README/docs, minimal npm configuration, and offline network guard were added for the public snapshot.
+The files in [source-manifest.json](../source-manifest.json) are byte-for-byte copies of the local source. This manifest contains relative paths and SHA-256 digests, not local machine paths or credentials. A small set of public-only adaptations is declared explicitly in the publication checker. The root tooling, README/docs, minimal npm configuration, focused public tests, and offline network guard were added for the public snapshot.
 
 ## Excluded
 

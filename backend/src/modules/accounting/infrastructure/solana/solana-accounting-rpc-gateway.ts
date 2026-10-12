@@ -1,3 +1,4 @@
+import { AccountingRpcWorkload } from "./accounting-rpc-workload.js";
 import { createHash } from "node:crypto";
 import {
   AccountingError,
@@ -20,7 +21,17 @@ interface ParsedTokenBalance {
   readonly uiTokenAmount: { readonly amount: string; readonly decimals: number };
 }
 
+// Accounting consumes RPC-parsed balance metadata, not signed wire bytes.
+// v1 receipts must remain readable without changing any signing/execution path.
+const MAX_ACCOUNTING_TRANSACTION_VERSION = 1;
+
 export class SolanaAccountingRpcGateway implements SolanaAccountingGateway {
+  readonly workload = new AccountingRpcWorkload();
+  private readonly cooldowns = new Map<string, { until: number; failures: number }>();
+  private readonly inFlight = new Map<string, Promise<unknown>>();
+  private readonly blocks = new Map<number, { signatures: readonly string[]; expiresAt: number; bytes: number }>();
+  private blockBytes = 0;
+  private readonly preferred = new Map<string, { url: string; until: number }>();
   constructor(
     private readonly configuration: {
       readonly rpcUrl: string;
@@ -28,6 +39,7 @@ export class SolanaAccountingRpcGateway implements SolanaAccountingGateway {
       readonly timeoutMs: number;
       readonly maxAttempts?: number;
       readonly retryBaseDelayMs?: number;
+      readonly onTiming?: (details: Readonly<Record<string, unknown>>) => void;
     },
     private readonly transport: typeof fetch = fetch,
     private readonly now: () => Date = () => new Date(),
@@ -81,11 +93,13 @@ export class SolanaAccountingRpcGateway implements SolanaAccountingGateway {
   }
 
   async fetchFinalizedTransaction(signature: string, wallet: TrackedWallet): Promise<ChainObservationBatch> {
-    const transactionValue = await this.rpc("getTransaction", [signature, {
+    const started = performance.now();
+    const transactionValue = await this.sharedRpc("getTransaction", [signature, {
       commitment: "finalized",
       encoding: "jsonParsed",
-      maxSupportedTransactionVersion: 0,
+      maxSupportedTransactionVersion: MAX_ACCOUNTING_TRANSACTION_VERSION,
     }]);
+    const transactionReadMs = performance.now() - started;
     const transaction = requireRecord(transactionValue, "finalized transaction");
     const slot = requireSafeInteger(transaction.slot, "slot");
     const blockTimeSeconds = transaction.blockTime === null || transaction.blockTime === undefined
@@ -95,7 +109,13 @@ export class SolanaAccountingRpcGateway implements SolanaAccountingGateway {
     if (meta.err !== null) {
       throw new AccountingError("ACCOUNTING_CHAIN_TRANSACTION_FAILED", "Failed Solana transaction cannot affect accounting.");
     }
+    const blockStarted = performance.now();
+    const blockCached = this.blocks.get(slot);
+    const blockCacheHit = !!blockCached && blockCached.expiresAt > this.now().getTime()
+      && blockCached.signatures.includes(signature);
     const transactionIndex = await this.findTransactionIndex(slot, signature);
+    this.configuration.onTiming?.({ transactionReadMs, blockReadMs: performance.now() - blockStarted,
+      finalizedReadMs: performance.now() - started, blockCacheHit });
     const observations = parseWalletTokenBalanceChanges({
       signature,
       slot: BigInt(slot),
@@ -134,9 +154,32 @@ export class SolanaAccountingRpcGateway implements SolanaAccountingGateway {
 
   /** Display-only background enrichment, without the accounting block-index RPC. */
   async fetchFinalizedTransactionMetadata(signature: string): Promise<unknown> {
-    return this.rpc('getTransaction', [signature, {
-      commitment: 'finalized', encoding: 'jsonParsed', maxSupportedTransactionVersion: 0,
-    }], true);
+    return this.sharedRpc('getTransaction', [signature, {
+      commitment: 'finalized', encoding: 'jsonParsed', maxSupportedTransactionVersion: MAX_ACCOUNTING_TRANSACTION_VERSION,
+    }]);
+  }
+
+  async getWalletTokenBalances(walletAddress: string): Promise<ReadonlyMap<string, string>> {
+    const balances = new Map<string, bigint>();
+    // A missing mint is zero only after BOTH programs have returned valid data.
+    for (const programId of ["TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA", "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"]) {
+      const result = await this.sharedRpc("getTokenAccountsByOwner", [walletAddress, { programId },
+        { commitment: "finalized", encoding: "jsonParsed" }]);
+      const value = requireRecord(result, "token accounts").value;
+      if (!Array.isArray(value)) throw invalidRpc("Token account list is invalid.");
+      for (const item of value) {
+        const account = requireRecord(requireRecord(item, "token account").account, "account");
+        if (account.owner !== programId) throw invalidRpc("Token program is invalid.");
+        const parsed = requireRecord(requireRecord(account.data, "data").parsed, "parsed data");
+        const info = requireRecord(parsed.info, "token info");
+        if (parsed.type !== "account" || info.owner !== walletAddress) throw invalidRpc("Token owner is invalid.");
+        const mint = requireString(info.mint, "mint");
+        const amount = requireString(requireRecord(info.tokenAmount, "token amount").amount, "raw balance");
+        if (!/^\d+$/.test(amount)) throw invalidRpc("Raw token balance is invalid.");
+        balances.set(mint, (balances.get(mint) ?? 0n) + BigInt(amount));
+      }
+    }
+    return new Map([...balances].map(([mint, amount]) => [mint, amount.toString()]));
   }
 
   async getTokenBalance(walletAddress: string, mint: string): Promise<string> {
@@ -162,21 +205,54 @@ export class SolanaAccountingRpcGateway implements SolanaAccountingGateway {
   }
 
   private async findTransactionIndex(slot: number, signature: string): Promise<number> {
-    const result = await this.rpc("getBlock", [slot, {
+    const cached = this.blocks.get(slot);
+    if (cached && cached.expiresAt > this.now().getTime()) {
+      const index = cached.signatures.indexOf(signature);
+      if (index >= 0) return index;
+      // A cache miss is not permission to invent chain ordering.
+      this.blocks.delete(slot); this.blockBytes -= cached.bytes;
+    }
+    const result = await this.sharedRpc("getBlock", [slot, {
       commitment: "finalized",
       transactionDetails: "signatures",
       rewards: false,
-      maxSupportedTransactionVersion: 0,
+      maxSupportedTransactionVersion: MAX_ACCOUNTING_TRANSACTION_VERSION,
     }]);
     const signatures = requireRecord(result, "block").signatures;
-    if (!Array.isArray(signatures)) throw invalidRpc("Block signatures are invalid.");
+    if (!Array.isArray(signatures) || signatures.some(value => typeof value !== 'string')) throw invalidRpc("Block signatures are invalid.");
     const index = signatures.indexOf(signature);
     if (index < 0) throw invalidRpc("Transaction signature is missing from its finalized block.");
+    const bytes = Buffer.byteLength(JSON.stringify(signatures));
+    const old = this.blocks.get(slot);
+    if (old) { this.blocks.delete(slot); this.blockBytes -= old.bytes; }
+    if (bytes <= 8 * 1024 * 1024) {
+      while (this.blocks.size >= 64 || this.blockBytes + bytes > 8 * 1024 * 1024) {
+        const first = this.blocks.entries().next().value;
+        if (!first) break;
+        this.blocks.delete(first[0]); this.blockBytes -= first[1].bytes;
+      }
+      this.blocks.set(slot, { signatures, expiresAt: this.now().getTime() + 60_000, bytes });
+      this.blockBytes += bytes;
+    }
     return index;
   }
 
-  private async rpc(method: string, params: readonly unknown[], historicalFallback = false): Promise<unknown> {
-    const rpcUrls = uniqueRpcUrls(this.configuration.rpcUrl, this.configuration.fallbackRpcUrls ?? []);
+  private sharedRpc(method: string, params: readonly unknown[]): Promise<unknown> {
+    // Never make a newly confirmed trade wait for a paced background request.
+    const key = JSON.stringify([this.workload.background, method, params]);
+    const current = this.inFlight.get(key);
+    if (current) return current;
+    if (this.inFlight.size >= 128) return this.rpc(method, params);
+    const work = this.rpc(method, params).finally(() => this.inFlight.delete(key));
+    this.inFlight.set(key, work);
+    return work;
+  }
+
+  private async rpc(method: string, params: readonly unknown[]): Promise<unknown> {
+    const configured = uniqueRpcUrls(this.configuration.rpcUrl, this.configuration.fallbackRpcUrls ?? []);
+    const preferred = this.preferred.get(method);
+    const rpcUrls = preferred && preferred.until > this.now().getTime()
+      ? [preferred.url, ...configured.filter(url => url !== preferred.url)] : configured;
     // Every configured endpoint gets at least one chance. `maxAttempts` remains
     // the upper bound for repeated cycles when fewer endpoints are configured.
     const maxAttempts = Math.max(boundedAttempts(this.configuration.maxAttempts ?? 3), rpcUrls.length);
@@ -184,23 +260,40 @@ export class SolanaAccountingRpcGateway implements SolanaAccountingGateway {
     let lastError: AccountingError | null = null;
     for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
       try {
-        return await this.rpcOnce(rpcUrls[(attempt - 1) % rpcUrls.length]!, method, params);
+        const url = rpcUrls[(attempt - 1) % rpcUrls.length]!;
+        const result = await this.workload.request(async () => {
+          const priorCooldown = this.cooldowns.get(url);
+          if ((priorCooldown?.until ?? 0) > this.now().getTime()) {
+            throw new AccountingError("ACCOUNTING_RPC_COOLDOWN", "RPC endpoint is cooling down.", true);
+          }
+          const value = await this.rpcOnce(url, method, params);
+          // A concurrent 429 must not be erased by an older successful request.
+          if (this.cooldowns.get(url) === priorCooldown) this.cooldowns.delete(url);
+          return value;
+        });
+        // Brief affinity avoids repeatedly querying a lagging primary. Expiry
+        // permits recovery; every endpoint remains eligible on failure/null.
+        if (!preferred || preferred.url !== url || preferred.until <= this.now().getTime()) {
+          this.preferred.set(method, { url, until: this.now().getTime() + 30_000 });
+        }
+        return result;
       } catch (error) {
         const accountingError = error instanceof AccountingError
           ? error
           : new AccountingError("ACCOUNTING_SOLANA_UNAVAILABLE", `${method} is unavailable.`, true);
         lastError = accountingError;
-        // A null finalized read is normal immediately after confirmation. The
-        // durable queue schedules its next poll; do not occupy a worker lane
-        // with several identical RPC reads and nested backoffs.
+        // Null is endpoint-local absence, not evidence that the chain is still
+        // pending. Probe each configured provider once before yielding to the
+        // durable queue; never loop over the same null endpoint in this call.
         if (accountingError.code === "ACCOUNTING_FINALITY_PENDING") {
-          // Old finalized receipts can be pruned by one provider but retained by
-          // another. Only background attribution probes each configured provider;
-          // normal deposit finality reads still yield immediately to the queue.
-          if (historicalFallback && attempt < rpcUrls.length) continue;
+          if (attempt < rpcUrls.length) continue;
           throw accountingError;
         }
         if (!accountingError.retryable || attempt === maxAttempts) throw accountingError;
+        // Probe an eligible fallback immediately; never retry a throttled endpoint
+        // before Retry-After. If all are cooling down, durable work resumes later.
+        if (rpcUrls.every(url => (this.cooldowns.get(url)?.until ?? 0) > this.now().getTime())) throw accountingError;
+        if (accountingError.code === "ACCOUNTING_RPC_COOLDOWN" || accountingError.code === "ACCOUNTING_RPC_RATE_LIMITED") continue;
         await delay(retryDelay(retryBaseDelayMs, attempt));
       }
     }
@@ -217,6 +310,19 @@ export class SolanaAccountingRpcGateway implements SolanaAccountingGateway {
         body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
         signal: controller.signal,
       });
+      if (response.status === 429) {
+        const previous = this.cooldowns.get(rpcUrl);
+        const failures = Math.min(8, (previous?.failures ?? 0) + 1);
+        const backoff = Math.min(60_000, 2_000 * 2 ** (failures - 1));
+        const retryAfter = parseRetryAfter(response.headers.get("retry-after"), this.now().getTime());
+        const cooldownMs = Math.max(backoff, retryAfter ?? 0);
+        this.cooldowns.set(rpcUrl, { until: Math.max(previous?.until ?? 0, this.now().getTime() + cooldownMs), failures });
+        // Host only: never expose credentials, path, query, wallet or signature.
+        this.configuration.onTiming?.({ event: "accounting_rpc_rate_limited", endpoint: new URL(rpcUrl).hostname,
+          method, cooldownMs, background: this.workload.background });
+        await response.body?.cancel();
+        throw new AccountingError("ACCOUNTING_RPC_RATE_LIMITED", `${method} failed with HTTP 429.`, true);
+      }
       if (!response.ok) {
         const retryable = isRetryableHttpStatus(response.status);
         throw new AccountingError(
@@ -389,4 +495,15 @@ function requireSafeInteger(value: unknown, name: string): number {
 
 function invalidRpc(message: string): AccountingError {
   return new AccountingError("ACCOUNTING_INVALID_SOLANA_RESPONSE", message, true);
+}
+
+export function parseRetryAfter(value: string | null, nowMs: number): number | null {
+  if (value === null) return null;
+  const trimmed = value.trim();
+  if (/^\d+(?:\.\d+)?$/.test(trimmed)) {
+    const ms = Number(trimmed) * 1_000;
+    return Number.isFinite(ms) ? ms : null;
+  }
+  const date = Date.parse(trimmed);
+  return Number.isFinite(date) ? Math.max(0, date - nowMs) : null;
 }

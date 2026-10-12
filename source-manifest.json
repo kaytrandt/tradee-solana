@@ -1,5 +1,5 @@
 {
-  "description": "Unmodified source snapshot from the local Tradee workspace, 2026-09-25. Paths are relative to this repository.",
+  "description": "Unmodified source snapshot from the local Tradee workspace, 2026-10-12. Paths are relative to this repository. Curated public-only adaptations are validated separately.",
   "files": [
     {
       "path": "backend/migrations/006_trading_whitelist.sql",
@@ -31,39 +31,31 @@
     },
     {
       "path": "backend/src/modules/accounting/domain/accounting.ts",
-      "sha256": "f2895d5e7b5a6a2413058d03a07311286d598c964f3cf9bfb2c9026715022ed7"
+      "sha256": "6cb5a20687f390af6d936d11ca8475613a3644f8662a2a00c2b19ae3c61d7e50"
     },
     {
       "path": "backend/src/modules/accounting/domain/exact-amount.ts",
       "sha256": "2a69ba3b6ac937eddf793709f4bc34ecf6d04cd50d4aad7692d2d5ecae1e93bc"
     },
     {
+      "path": "backend/src/modules/accounting/infrastructure/solana/accounting-rpc-workload.ts",
+      "sha256": "488e456b748a949073a882d173a46e8e9eaa7320247d9757217b397cc1952b2b"
+    },
+    {
       "path": "backend/src/modules/accounting/infrastructure/solana/solana-accounting-rpc-gateway.ts",
-      "sha256": "e9e371cc1682c737579c8e93b3df90e324de5421ff32a8312c53792520d39309"
+      "sha256": "71da85bc3f4975746a1cf73d1d31d7a40409f02d913bcc8adef22598c3f1d612"
     },
     {
       "path": "backend/src/modules/assets/domain/asset-provider.ts",
       "sha256": "c3a304e521df70731f7d0614b85edaf51a651903cad3d70083c4334e9b43fafd"
     },
     {
-      "path": "backend/src/modules/assets/domain/asset.ts",
-      "sha256": "fa4a5056eebe1468cf398b59424f63abb7e5d00fd569763980d4aa84699ba8cc"
-    },
-    {
       "path": "backend/src/modules/assets/domain/quantity-multiplier.ts",
       "sha256": "fdd878c897f67f9229ea08ad0678e885eaec105eacbdfcbc8d009fffa8982739"
     },
     {
-      "path": "backend/src/modules/assets/domain/stockmeme-catalog.ts",
-      "sha256": "618aaf2babc768e639b8c91e0dfcf75c5e64e942402df5c41c66c9c1eef7c978"
-    },
-    {
-      "path": "backend/src/modules/assets/domain/stockmeme.ts",
-      "sha256": "cf766fac7eec2728c887032abf479310f9f0af4eaf39a72f30134dc5999887a1"
-    },
-    {
       "path": "backend/src/modules/assets/domain/sunrise-asset-catalog.ts",
-      "sha256": "f7ab6d8c8b1e519966ef6d08d2d30a96454a6cda3b07c4ef0ffd9dfee8cb7f4b"
+      "sha256": "88adb449804d4c78a0f2481f6089ade4d3b60c52288af5ba4b96480b0be9e1b2"
     },
     {
       "path": "backend/src/modules/assets/domain/xstocks-provider.ts",
@@ -75,7 +67,11 @@
     },
     {
       "path": "backend/src/modules/assets/infrastructure/sunrise/sunrise-http-provider.ts",
-      "sha256": "efe560e069c6547425e3c2d6af6b5247989aaa0b65c3d941464b4bda7646683d"
+      "sha256": "6246072f3c6d8ba725fbd227b71f5fe368fe0fb0bd6be72063d344cbf4644b47"
+    },
+    {
+      "path": "backend/src/modules/assets/infrastructure/sunrise/sunrise-public-catalog.ts",
+      "sha256": "c91698e5c407caf65738fc1644fb63d970d479db7854f0c04b224c38aad8ffac"
     },
     {
       "path": "backend/src/modules/assets/infrastructure/xstocks/exact-json-decimal.ts",
@@ -143,7 +139,7 @@
     },
     {
       "path": "backend/src/modules/trading/application/confirmed-trade-receipt-service.ts",
-      "sha256": "4f55cee295c2a428efeb0868a9f457363abd118cb969494b1b865d475653b2a0"
+      "sha256": "2ab80c0c3ff408272dc7c76575afd83e848893bd64744f619e4bb8d6056fd440"
     },
     {
       "path": "backend/src/modules/trading/application/fee-engine.ts",
@@ -164,10 +160,6 @@
     {
       "path": "backend/src/modules/trading/application/trade-risk-engine.ts",
       "sha256": "e6a0e8d50a95eb2e39b8dd5bcdae346bf26f27a21f8521a88121741690ef8032"
-    },
-    {
-      "path": "backend/src/modules/trading/application/trading-service.ts",
-      "sha256": "10152f8d748b26165f5424e86c0809fb7be42e2f9893e3d35a4f30e0bf85606e"
     },
     {
       "path": "backend/src/modules/trading/domain/base-units.ts",
@@ -223,7 +215,7 @@
     },
     {
       "path": "backend/src/modules/trading/infrastructure/solana/solana-rpc-execution-gateway.ts",
-      "sha256": "42670769ca2cf3f460954839a9cd66b562eaee4fbbfe2a9c79ea72291b00fcb4"
+      "sha256": "3847ddbe9965f6d3110b15d2f5b604c9fc1e89691573798aeffac8638d56854a"
     },
     {
       "path": "backend/src/modules/trading/infrastructure/solana/trade-economics-verifier.ts",
@@ -299,7 +291,7 @@
     },
     {
       "path": "backend/src/modules/wallet/fee-payer/solana-fee-payer-chain.ts",
-      "sha256": "b639a7bb71fa50589883e274be770f4b14da2293867dc9a3ef13dd90ec768a81"
+      "sha256": "94c29fd0cd81272643971538046aaf29183594c0f42baf416fc1705c4c3b8eb2"
     },
     {
       "path": "backend/src/modules/wallet/fee-payer/sponsor-instruction-policy.ts",
@@ -330,8 +322,16 @@
       "sha256": "8dca2b7d6e6c52d52a4f4521980641760e357eb753615d8c72ef985df39dee65"
     },
     {
+      "path": "backend/test/accounting-rpc-performance.test.ts",
+      "sha256": "be8c89cd300bf4e0d2e85cd5c318e3bdb29d72b3e6d8844b491ae2b25124dfd2"
+    },
+    {
+      "path": "backend/test/accounting-rpc-throttle.test.ts",
+      "sha256": "27e73331562920f965cee40468fe7279df510ee3cfd16f4073002f1cbaa5a489"
+    },
+    {
       "path": "backend/test/fee-payer.test.ts",
-      "sha256": "8ebaed937c6c402265a24b8771f07d47c83f971e884d51676ecbb21f19b05f6b"
+      "sha256": "902bb959991b163aa071bdd8eff0b9801804280bf14fe6a076ddde5611c8a6c5"
     },
     {
       "path": "backend/test/gas-sponsorship-policy.test.ts",
@@ -364,10 +364,6 @@
     {
       "path": "backend/test/trading-policy-service.test.ts",
       "sha256": "56310ad073625667f6ea13b2abe16340649b88d4af00ce90ffce80a3ef2518e0"
-    },
-    {
-      "path": "backend/test/trading-service.test.ts",
-      "sha256": "72fa133e23e3cf78d109d9468abcf5248a05ba7d1a02489498e9bdacf87be699"
     },
     {
       "path": "backend/test/trading-state-machine.test.ts",

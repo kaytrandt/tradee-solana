@@ -287,3 +287,44 @@ test('lightweight admission balance retains mainnet, exact integers and block ex
   height = 101;
   await assert.rejects(chain.balance('payer', '100'), code('TRADE_TRANSACTION_EXPIRED'));
 });
+
+
+test("gas payer hedges only read preflight, aborts slow endpoint, and remembers the healthy endpoint", async () => {
+  const f = fixture();
+  const calls: {url:string;method:string}[] = [];
+  let primaryAborted = false;
+  const transport: typeof fetch = async (url, init) => {
+    const endpoint = String(url), {method} = JSON.parse(init!.body as string) as {method:string};
+    calls.push({url:endpoint,method});
+    if (method === "getGenesisHash") return Response.json({result:"5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d"});
+    if (endpoint.includes("slow")) return new Promise<Response>((_resolve,reject) => {
+      init!.signal!.addEventListener("abort", () => {primaryAborted=true;reject(new Error("aborted"));},{once:true});
+    });
+    const results: Record<string,unknown> = {getEpochInfo:{blockHeight:1,absoluteSlot:2},getFeeForMessage:{value:110000},
+      getBalance:{value:100000000},simulateTransaction:{value:{err:null,accounts:[{lamports:97850720}]}}};
+    assert.notEqual(method,"sendTransaction","read hedging must never broadcast");
+    return Response.json({result:results[method]});
+  };
+  const chain = new SolanaFeePayerChain(["https://slow.invalid","https://healthy.invalid"],transport);
+  assert.deepEqual(await chain.preflight(f.request.serializedTransaction,f.gas.publicKey.toBase58(),"1000"),
+    {networkFee:110000n,estimatedDebit:2149280n,balance:100000000n});
+  assert.equal(primaryAborted,true);
+  const previous = calls.length;
+  assert.equal(await chain.balance(f.gas.publicKey.toBase58(),"1000"),100000000n);
+  assert.ok(calls.slice(previous).every(call => call.url.includes("healthy")));
+});
+
+test("hedged preflight cannot hide transaction expiry behind a successful fallback", async () => {
+  const f=fixture(); let fallbackCalled=false;
+  const transport:typeof fetch=async(url,init)=>{
+    if(String(url).includes("fallback"))fallbackCalled=true;
+    const {method}=JSON.parse(init!.body as string) as {method:string};
+    const results:Record<string,unknown>={getGenesisHash:"5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d",
+      getEpochInfo:{blockHeight:1001,absoluteSlot:2000},getFeeForMessage:{value:1},getBalance:{value:100},
+      simulateTransaction:{value:{err:null,accounts:[{lamports:99}]}}};
+    return Response.json({result:results[method]});
+  };
+  const chain=new SolanaFeePayerChain(["https://primary.invalid","https://fallback.invalid"],transport);
+  await assert.rejects(chain.preflight(f.request.serializedTransaction,f.gas.publicKey.toBase58(),"1000"),code("TRADE_TRANSACTION_EXPIRED"));
+  assert.equal(fallbackCalled,false);
+});

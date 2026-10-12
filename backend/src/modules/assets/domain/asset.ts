@@ -38,8 +38,7 @@ export interface AssetProviderTimestamps {
 }
 
 export interface Asset {
-  readonly assetClass?: "stocks" | "stockmemes";
-  readonly stockmeme?: import("./stockmeme.js").StockmemeMetadata | null;
+  readonly assetClass?: "stocks";
   readonly id: string;
   readonly provider?: string;
   readonly providerAssetId?: string;
